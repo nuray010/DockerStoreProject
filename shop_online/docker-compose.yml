@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  django:
+    build: .
+    command: >
+      bash -c "./manage.py collectstatic --noinput && ./manage.py makemigrations && ./manage.py migrate && gunicorn -b 0.0.0.0:8000 shop_online.wsgi:application"
+    volumes:
+      - .:/store_app
+      - static_volume:/store_app/static
+      - media_volume:/store_app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres_db
+
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/store_app/static
+      - media_volume:/store_app/media
+    depends_on:
+      - django
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
