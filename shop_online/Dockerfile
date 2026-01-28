@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /store_app
 
-COPY requirements.txt /store_app/
+COPY req.txt /store_app/
 RUN pip install --upgrade pip && \
     pip install -r req.txt
 
